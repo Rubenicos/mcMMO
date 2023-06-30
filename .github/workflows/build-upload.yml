@@ -1,0 +1,26 @@
+name: Build and Upload
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v2.2.0
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Cache Maven packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build via Maven
+        run: mvn package
+      - name: Upload Plugin
+        uses: actions/upload-artifact@v2
+        with:
+          name: mcMMO Artifact
+          path: "**/target/*.jar"
